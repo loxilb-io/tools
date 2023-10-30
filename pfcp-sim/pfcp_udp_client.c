@@ -225,6 +225,7 @@ int main(int argc, char **argv) {
        if (ch == 8) {
         exit(0);
        }
+       all = false;
        printf("Number of msgs: ");
        scanf("%d", &num);
        seid = atoi(argv[1]);
@@ -234,7 +235,7 @@ int main(int argc, char **argv) {
        switch(ch) {
         case 1:
             nhdr = (struct pfcp_nhdr *)buffer;
-            nhdr->ver = 3;
+            nhdr->ver = 1;
             nhdr->mp = 0;
             asreq = (void*) buffer;
             asreq->hdr.mt = PFCP_ASSOCIATION_SETUP_REQ;
@@ -255,7 +256,7 @@ int main(int argc, char **argv) {
             asreq->features.tlv.len = htons(sizeof(struct feat_ie) - sizeof(struct pfcp_tlv));
             strcpy(asreq->features.data, "Function features");
 
-            sendto(sockfd, (void *)hbreq, sizeof(struct pfcp_asreq),
+            sendto(sockfd, (void *)asreq, sizeof(struct pfcp_asreq),
                             MSG_CONFIRM, (const struct sockaddr *) &servaddr,
                             sizeof(servaddr));
             printf("AS Req sent seq %u\n", ntohl(asreq->hdr.seq) >> 8);
@@ -294,7 +295,7 @@ int main(int argc, char **argv) {
             arreq->node_id.type = 0;
             arreq->node_id.node_ip = 0x01010101;
 
-            sendto(sockfd, (void *)hbreq, sizeof(struct pfcp_arreq),
+            sendto(sockfd, (void *)arreq, sizeof(struct pfcp_arreq),
                             MSG_CONFIRM, (const struct sockaddr *) &servaddr,
                             sizeof(servaddr));
             printf("AR Req sent seq %u\n", ntohl(arreq->hdr.seq) >> 8);
