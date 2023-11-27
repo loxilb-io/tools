@@ -3,12 +3,12 @@
     
     Compilation:
       ```
-        gcc pfcp_udp_client.c -o smf_sim
+        gcc pfcp_common.c pfcp_udp_client.c -lpthread -o smf_sim
       ```
     How to run:
     ```
-      #./smf_sim <seq-no-seed>
-      ./smf_sim 1000
+      #./smf_sim <peer-ip> <seq-no-seed>
+      ./smf_sim 31.31.31.1 1000
       
       1 for assoc setup req
       2 for assoc rel req
@@ -24,9 +24,15 @@
 
     Compilation:
       ```
-        gcc pfcp_udp_server.c -o upf_sim
+        gcc pfcp_common.c pfcp_udp_server.c -lpthread -o upf_sim
       ```
     How to run:
     ```
-      ./upf_sim
+      ./upf_sim 20.20.20.1 3000
+
+     1 for assoc setup req
+     2 for assoc rel req
+     3 for heartbeat 
+     8 for exit
+
     ```
