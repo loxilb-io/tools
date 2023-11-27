@@ -28,7 +28,8 @@
       ```
     How to run:
     ```
-      ./upf_sim 20.20.20.1 3000
+     #./upf_sim <peer-ip> <seq-no-seed>
+     ./upf_sim 20.20.20.1 3000
 
      1 for assoc setup req
      2 for assoc rel req
