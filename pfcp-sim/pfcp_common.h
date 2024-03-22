@@ -2,6 +2,15 @@
 #define __PFCP_COMMON_H
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdbool.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <pthread.h>
 
 #define PORT	 8805
 #define MAXLINE   12000
@@ -163,6 +172,14 @@ struct pfcp_hbres {
   struct rects_ie ts;
 }__attribute__((packed, aligned(1)));
 
-void *node_msg_func();
+void *pfcp_msg_responder();
+int udpReceive(int sockfd, struct sockaddr_in *servaddr, char *buffer);
+int udpSend(int sockfd, struct sockaddr_in *servaddr, void *msg, int len);
+void asReqResp(int sockfd, struct sockaddr_in *servaddr, int seq, int node_ip, int *sent, int *recv);
 
+void arReqResp(int sockfd, struct sockaddr_in *servaddr, int seq, int node_ip, int *sent, int *recv);
+void hbReqResp(int sockfd, struct sockaddr_in *servaddr, int seq, int *sent, int *recv);
+void seReqResp(int sockfd, struct sockaddr_in *servaddr, int seq, int node_ip, uint64_t seid, int *sent, int *recv);
+void smReqResp(int sockfd, struct sockaddr_in *servaddr, int seq, uint64_t seid, uint64_t gap, int *sent, int *recv);
+void sdReqResp(int sockfd, struct sockaddr_in *servaddr, int seq, uint64_t seid, uint64_t gap, int *sent, int *recv);
 #endif
