@@ -1,10 +1,11 @@
 # tools/pfcp-sim
-  - SMF simulator : pfcp_udp_client.c
+  - Compilation:
+      ```
+        make all
+      ```
+
+  - SMF simulator :
     
-    Compilation:
-      ```
-        gcc pfcp_common.c pfcp_udp_client.c -lpthread -o smf_sim
-      ```
     How to run:
     ```
       #./smf_sim <peer-ip> <seq-no-seed>
@@ -20,12 +21,8 @@
       8 for exit
 
     ```
-  - UPF simulator : pfcp_udp_server.c
+  - UPF simulator :
 
-    Compilation:
-      ```
-        gcc pfcp_common.c pfcp_udp_server.c -lpthread -o upf_sim
-      ```
     How to run:
     ```
      #./upf_sim <peer-ip> <seq-no-seed>
