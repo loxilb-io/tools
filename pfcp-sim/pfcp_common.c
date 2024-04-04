@@ -12,7 +12,7 @@
 int debug = 0;
 
 int udpReceive(int s, struct sockaddr_in *servaddr, char *buffer) {
-    int n, len;
+    int n, len = sizeof(*servaddr);
     fd_set fds; // will be checked for being ready to read
     FD_ZERO(&fds);
     FD_SET(s, &fds);
@@ -65,6 +65,7 @@ void asReqResp(int sockfd, struct sockaddr_in *servaddr,
     asreq->hdr.mt = PFCP_ASSOCIATION_SETUP_REQ;
     asreq->hdr.mlen = htons(sizeof(*asreq) - sizeof(struct pfcp_tlv));
     asreq->hdr.seq = htonl(seq << 8);
+    seq = htonl(seq << 8);
 
     /*Node ID*/
     asreq->node_id.tlv.type = htons(60);
@@ -96,6 +97,10 @@ void asReqResp(int sockfd, struct sockaddr_in *servaddr,
 
         asres = (struct pfcp_asres *)buffer;
         if (debug) printf("AS resp recvd - seq %u\n",ntohl(asres->hdr.seq) >> 8);
+        if (asres->hdr.seq != seq) {
+            printf("AS resp recvd - Incorrect seq %u, Expected : %d\n",ntohl(asres->hdr.seq) >> 8, ntohl(seq) >> 8);
+            return;
+        }
         (*recv)++;
     }
 }
@@ -116,6 +121,7 @@ void arReqResp(int sockfd, struct sockaddr_in *servaddr,
     arreq->hdr.mt = PFCP_ASSOCIATION_REL_REQ;
     arreq->hdr.mlen = htons(sizeof(*arreq) - sizeof(struct pfcp_tlv));
     arreq->hdr.seq = htonl(seq << 8);
+    seq = htonl(seq << 8);
 
     /*Node ID*/
     arreq->node_id.tlv.type = htons(60);
@@ -140,6 +146,10 @@ void arReqResp(int sockfd, struct sockaddr_in *servaddr,
 
         arres = (struct pfcp_arres *)buffer;
         if (debug) printf("AR resp recvd - seq %u\n",ntohl(arres->hdr.seq) >> 8);
+        if (arres->hdr.seq != seq) {
+            printf("AR resp recvd - Incorrect seq %u, Expected : %d\n",ntohl(arres->hdr.seq) >> 8, ntohl(seq) >> 8);
+            return;
+        }
         (*recv)++;
     }
 
@@ -162,6 +172,7 @@ void hbReqResp(int sockfd, struct sockaddr_in *servaddr,
     hbreq->hdr.mt = PFCP_HEARTBEAT_REQ;
     hbreq->hdr.mlen = htons(sizeof(*hbreq) - sizeof(struct pfcp_tlv));
     hbreq->hdr.seq = htonl(seq << 8);
+    seq = htonl(seq << 8);
 
     hbreq->ts.tlv.type = htons(96);
     hbreq->ts.tlv.len = htons(sizeof(struct rects_ie) - sizeof(struct pfcp_tlv));
@@ -184,6 +195,10 @@ void hbReqResp(int sockfd, struct sockaddr_in *servaddr,
 
         hbres = (struct pfcp_hbres *)buffer;
         if (debug) printf("HB resp recvd - seq %u\n",ntohl(hbres->hdr.seq) >> 8);
+        if (hbres->hdr.seq != seq) {
+            printf("HB resp recvd - Incorrect seq %u, Expected : %d\n",ntohl(hbres->hdr.seq) >> 8, ntohl(seq) >> 8);
+            return;
+        }
         (*recv)++;
     }
 }
@@ -204,6 +219,7 @@ void seReqResp(int sockfd, struct sockaddr_in *servaddr,
 
     sereq = (void *)buffer;
     sereq->hdr.seq = htonl(seq << 8);
+    seq = htonl(seq << 8);
 
     sereq->hdr.mt = PFCP_SESSION_EST_REQ;
     sereq->hdr.mlen = htons(sizeof(*sereq) - sizeof(struct pfcp_tlv));
@@ -240,6 +256,10 @@ void seReqResp(int sockfd, struct sockaddr_in *servaddr,
         if (debug)
             printf("SE resp recvd - seq %u seid %lu f-seid %lu \n", ntohl(seres->hdr.seq) >> 8, 
             be64toh(seres->hdr.seid), be64toh(seres->fseid.seid));
+        if (seres->hdr.seq != seq) {
+            printf("SE resp recvd - Incorrect seq %u, Expected : %d\n",ntohl(seres->hdr.seq) >> 8, ntohl(seq) >> 8);
+            return;
+        }
         (*recv)++;
     }
 }
@@ -257,6 +277,7 @@ void smReqResp(int sockfd, struct sockaddr_in *servaddr,
     shdr->mp = 0;
     shdr->sbit = 1;
     shdr->seq = htonl(seq << 8);
+    seq = htonl(seq << 8);
     semreq = (void *)buffer;
 
     semreq->hdr.mt = PFCP_SESSION_MOD_REQ;
@@ -282,6 +303,10 @@ void smReqResp(int sockfd, struct sockaddr_in *servaddr,
         semres = (struct pfcp_semres *)buffer;
         if (debug)
             printf("SM resp recvd - seq %u c-seid %lu\n", ntohl(shdr->seq) >> 8, be64toh(semres->hdr.seid));
+        if (semres->hdr.seq != seq) {
+            printf("SM resp recvd - Incorrect seq %u, Expected : %d\n",ntohl(semres->hdr.seq) >> 8, ntohl(seq) >> 8);
+            return;
+        }
         (*recv)++;
     }
 }
@@ -300,6 +325,7 @@ void sdReqResp(int sockfd, struct sockaddr_in *servaddr,
     shdr->mp = 0;
     shdr->sbit = 1;
     shdr->seq = htonl(seq << 8);
+    seq = htonl(seq << 8);
     sedreq = (void *)buffer;
 
     sedreq->hdr.mt = PFCP_SESSION_DEL_REQ;
@@ -325,6 +351,10 @@ void sdReqResp(int sockfd, struct sockaddr_in *servaddr,
         sedres = (struct pfcp_sedres *)buffer;
         if (debug)
             printf("SD resp recvd - seq %u c-seid %lu\n", ntohl(shdr->seq) >> 8, be64toh(sedres->hdr.seid));
+        if (sedres->hdr.seq != seq) {
+            printf("SD resp recvd - Incorrect seq %u, Expected : %d\n",ntohl(sedres->hdr.seq) >> 8, ntohl(seq) >> 8);
+            return;
+        }
         (*recv)++;
     }
 }
