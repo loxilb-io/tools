@@ -15,7 +15,7 @@
 int main(int argc, char **argv) {
 	
     pthread_t thread_id; 
-	int sockfd;
+	int sockfd, pass = 0;
 
 	struct sockaddr_in	 servaddr, cliaddr;
 	if (argc != 3) {
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
 
     cliaddr.sin_family = AF_INET;
     //cliaddr.sin_addr.s_addr= htonl(INADDR_ANY);
-    cliaddr.sin_port=htons(30000); //source port for outgoing packets
+    cliaddr.sin_port=htons(30001); //source port for outgoing packets
     bind(sockfd,(struct sockaddr *)&cliaddr,sizeof(cliaddr));
 	
     pthread_create(&thread_id, NULL, pfcp_msg_responder, NULL);
@@ -81,6 +81,7 @@ int main(int argc, char **argv) {
        }
  
        seid = atoi(argv[1]);
+       pass = 0;
        printf("\n-----------------------------------------------------\n");
        for(int d = 1; d <= duration; d++) {
            sent = 0;
@@ -113,9 +114,10 @@ int main(int argc, char **argv) {
                seid++;
            }
            printf(">%d.00 - %d.00:> \t\tSent:\t%d msgs, Recv:\t%d msgs\n", d-1, d,sent,recv);
+           if (sent == recv) pass++;
            if(d<duration) sleep(1);
        }
-       printf("Done.\n");
+       printf("Done(%u/%u).\n", pass, duration);
     } while(1);
 	close(sockfd);
 

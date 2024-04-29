@@ -5,6 +5,7 @@ int main(int argc, char **argv) {
 	int sockfd;
     struct sockaddr_in	 servaddr, cliaddr;
     pthread_t thread_id;
+    int pass = 0;
 	
     if (argc != 3) {
         printf("Usage - %s <peer-ip> <seid-seed-value>\n", argv[0]);
@@ -70,6 +71,7 @@ int main(int argc, char **argv) {
        }
        seid = atoi(argv[1]);
        printf("\n-----------------------------------------------------\n");
+       pass = 0;
        for(int d = 1; d <= duration; d++) {
            sent = 0;
            recv = 0;
@@ -115,9 +117,10 @@ int main(int argc, char **argv) {
                seid++;
            }
            printf(">%d.00 - %d.00:> \t\tSent:\t%d msgs, Recv:\t%d msgs\n", d-1, d,sent,recv);
+           if (sent == recv) pass++;
            if(d<duration) sleep(1);
        }
-       printf("Done.\n");
+       printf("Done(%u/%u).\n", pass, duration);
     } while(1);
 	close(sockfd);
 	return 0;
