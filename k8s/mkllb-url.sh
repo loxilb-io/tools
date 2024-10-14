@@ -2,9 +2,10 @@
 
 usage() {
     echo "Usage: $0 -a <ip-addr> -z <zone> -t <type>"
+    echo "       $0 -a <ip-addr> -z <zone> -t <type> -d"
 }
 
-if [[ $# -ne 6 ]];then
+if [[ $# -gt 7 ]] || [[ $# -lt 6 ]]; then
    usage
    exit
 fi
@@ -19,21 +20,29 @@ fi
 addr=""
 zone="llb"
 utype="default"
+cmd="apply"
 
-while getopts a:z:t: opt 
+while getopts a:z:t:x opt 
 do
     case "${opt}" in
         a) addr=${OPTARG};;
         z) zone=${OPTARG};;
         t) utype=${OPTARG};;
+        x) cmd="delete";;
+        ?) usage;exit;;
     esac
 done
 
+echo "============"
+echo "Applying CRD"
+echo "============"
 echo addr $addr
 echo zone $zone
 echo utype $utype
+echo cmd $cmd
+echo "============"
 
-cat <<EOF | kubectl apply -f -
+cat <<EOF | kubectl ${cmd} -f -
 apiVersion: "loxiurl.loxilb.io/v1"
 kind: LoxiURL
 metadata:
