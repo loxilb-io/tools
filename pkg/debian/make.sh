@@ -10,6 +10,10 @@ set -e
 
 ver=$(echo $1)
 gver=v$ver
+if [[ $ver == "latest" ]]; then
+  gver="main"
+  ver="0.99rc"
+fi
 rel=$(echo $2)
 arch=$(echo $3)
 
