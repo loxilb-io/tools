@@ -44,12 +44,13 @@ Description: LoxiLB" >> loxilb_$ver-$rel_$arch/DEBIAN/control
 wget https://github.com/openssl/openssl/releases/download/openssl-3.3.1/openssl-3.3.1.tar.gz && tar -xvzf openssl-3.3.1.tar.gz && \
 cd openssl-3.3.1 && ./Configure enable-ktls '-Wl,-rpath,$(LIBRPATH)' --prefix=/usr/local/build && \
 make -j$(nproc) && sudo make install_dev install_modules && cd - && \
+sudo rm /usr/include/openssl/ && \
 sudo cp -a /usr/local/build/include/openssl /usr/include/ && \
 if [ -d /usr/local/build/lib64  ] ; then sudo mv /usr/local/build/lib64  /usr/local/build/lib; fi && \
 sudo cp -fr /usr/local/build/lib/* /usr/lib/ && sudo ldconfig && \
 rm -fr openssl-3.3.1*
 
-LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib64/"
+LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/"
 
 git clone --recurse-submodules https://github.com/loxilb-io/loxilb
 cd loxilb/loxilb-ebpf
