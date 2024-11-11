@@ -13,3 +13,38 @@ if ! [ -x "$(command -v gobgpd)" ]; then
   echo 'Error: gobgpd is not installed.' >&2
   echo 'Error: bgp options may not work.' >&2
 fi
+
+check_openssl_version () {
+    if [[ $1 == $2 ]]
+    then
+        return 0
+    fi
+    local IFS=.
+    local i ver1=($1) ver2=($2)
+    # fill empty fields in ver1 with zeros
+    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
+    do
+        ver1[i]=0
+    done
+    for ((i=0; i<${#ver1[@]}; i++))
+    do
+        if ((10#${ver1[i]:=0} > 10#${ver2[i]:=0}))
+        then
+            return 1
+        fi
+        if ((10#${ver1[i]} < 10#${ver2[i]}))
+        then
+            return 2
+        fi
+    done
+    return 0
+}
+
+ver=`openssl version -v |cut -d ' '  -f 2`
+check_openssl_version $ver 3.0.0
+
+ec=$?
+if [[ "$ec" -eq 2 ]]; then
+  echo "openssl > 3.0.0 is required"
+  exit 1
+fi
