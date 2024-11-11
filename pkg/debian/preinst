@@ -1,0 +1,15 @@
+#!/bin/bash
+if ! [ -x "$(command -v go)" ]; then
+  echo 'Error: go is not installed.' >&2
+  exit 1
+fi
+
+if ! [ -x "$(command -v gobgp)" ]; then
+  echo 'Error: gobgp is not installed.' >&2
+  echo 'Error: bgp options may not work.' >&2
+fi
+
+if ! [ -x "$(command -v gobgpd)" ]; then
+  echo 'Error: gobgpd is not installed.' >&2
+  echo 'Error: bgp options may not work.' >&2
+fi

@@ -1,0 +1,4 @@
+#!/bin/bash
+ldconfig
+systemctl enable loxilb
+systemctl start loxilb

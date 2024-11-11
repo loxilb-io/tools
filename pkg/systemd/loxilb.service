@@ -1,0 +1,14 @@
+[Unit]
+Description=loxilb cloud-native load-balancer
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStartPre=/usr/local/sbin/mkllb_bpffs
+ExecStart=/usr/local/sbin/loxilb
+
+[Install]
+WantedBy=multi-user.target
