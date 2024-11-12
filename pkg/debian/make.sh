@@ -52,6 +52,12 @@ rm -fr openssl-3.3.1*
 
 LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/lib/"
 
+echo "openssl local build"
+ls /usr/local/build/include/openssl
+
+echo "openssl local build"
+ls /usr/include/openssl
+
 git clone --recurse-submodules https://github.com/loxilb-io/loxilb
 cd loxilb/loxilb-ebpf
 git checkout $gver
