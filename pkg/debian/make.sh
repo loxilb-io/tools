@@ -59,7 +59,7 @@ cd -
 cd loxilb
 git checkout $gver
 if [[ $gver == "main" ]]; then
-    sed -i 's/var version string =.*/var version string = \"0.9.99-beta\"/' ./main.go
+    sed -i 's/var version string =.*/var version string = \"0.99-beta\"/' ./main.go
 fi
 make
 cd -
