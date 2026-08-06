@@ -32,14 +32,16 @@ cp -f systemd/loxilb.service loxilb_$ver-$rel_$arch/etc/systemd/system/
 cp -f debian/postinst loxilb_$ver-$rel_$arch/DEBIAN/
 cp -f debian/preinst loxilb_$ver-$rel_$arch/DEBIAN/
 
-echo "Package: loxilb
+cat > loxilb_$ver-$rel_$arch/DEBIAN/control <<EOF
+Package: loxilb
 Version: $ver-$rel
 Section: base
 Priority: optional
 Architecture: $arch
-Depends:
+Depends: libc6, libssl3, libelf1, zlib1g, libzstd1
 Maintainer: Trekkie <trekkie@netlox.io>
-Description: LoxiLB" >> loxilb_$ver-$rel_$arch/DEBIAN/control
+Description: LoxiLB
+EOF
 
 wget https://github.com/openssl/openssl/releases/download/openssl-3.3.1/openssl-3.3.1.tar.gz && tar -xvzf openssl-3.3.1.tar.gz && \
 cd openssl-3.3.1 && ./Configure enable-ktls '-Wl,-rpath,$(LIBRPATH)' --prefix=/usr/local/build && \
