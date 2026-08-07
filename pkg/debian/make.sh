@@ -60,10 +60,25 @@ git checkout $gver
 cd -
 cd loxilb
 git checkout $gver
-if [[ $gver == "main" ]]; then
-    sed -i 's/var version string =.*/var version string = \"0.99-beta\"/' ./main.go
+# Pass the version explicitly rather than letting the loxilb Makefile derive it
+# from the checked out tag: that derivation fails silently (empty VERSION, no
+# stamp, in-source dev placeholder) if the clone ever loses its tags, and $ver
+# is the value this build was asked for anyway.
+make VERSION=$ver
+# Confirm the stamp actually landed. Without this a build that skipped the
+# stamp still produces a deb, and the mismatch only surfaces once someone runs
+# `loxilb --version` on an installed release.
+if ! version_out=$(./loxilb --version 2>&1); then
+    echo "Could not run the freshly built loxilb binary:" >&2
+    echo "$version_out" >&2
+    exit 1
 fi
-make
+built_ver=$(printf '%s\n' "$version_out" | awk '/^loxilb version:/ {print $3; exit}')
+if [[ "$built_ver" != "$ver" && "$built_ver" != "$ver"-* ]]; then
+    echo "loxilb version mismatch: requested '$ver', binary reports '${built_ver:-<none>}'" >&2
+    exit 1
+fi
+echo "loxilb binary reports version '$built_ver'"
 cd -
 cp loxilb/loxilb loxilb_$ver-$rel_$arch/usr/local/sbin/
 cp loxilb/loxilb-ebpf/utils/mkllb_bpffs.sh loxilb_$ver-$rel_$arch/usr/local/sbin/mkllb_bpffs
