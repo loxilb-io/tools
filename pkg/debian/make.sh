@@ -86,7 +86,20 @@ sudo cp /opt/loxilb/*.o loxilb_$ver-$rel_$arch/opt/loxilb/
 rm -fr loxilb
 
 git clone https://github.com/loxilb-io/loxicmd.git && cd loxicmd && \
-git fetch --all --tags && git checkout $gver && go get . && make && cd -
+git fetch --all --tags && git checkout $gver && go get . && make VERSION=$ver && cd -
+# Same check as for loxilb above: confirm the stamp landed rather than shipping
+# a loxicmd that misreports its own version.
+if ! lc_version_out=$(./loxicmd/loxicmd version 2>&1); then
+    echo "Could not run the freshly built loxicmd binary:" >&2
+    echo "$lc_version_out" >&2
+    exit 1
+fi
+lc_built_ver=$(printf '%s\n' "$lc_version_out" | awk '/^Loxicmd version:/ {print $3; exit}')
+if [[ "$lc_built_ver" != "$ver" && "$lc_built_ver" != "$ver"-* ]]; then
+    echo "loxicmd version mismatch: requested '$ver', binary reports '${lc_built_ver:-<none>}'" >&2
+    exit 1
+fi
+echo "loxicmd binary reports version '$lc_built_ver'"
 cp ./loxicmd/loxicmd loxilb_$ver-$rel_$arch/usr/local/sbin/loxicmd
 rm -fr loxicmd
 
